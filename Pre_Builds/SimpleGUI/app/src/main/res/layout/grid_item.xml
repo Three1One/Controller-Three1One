@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView android:id="@+id/item1"
+                android:text="Device Name"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="100dip"
+                android:textStyle="bold"
+                />
+
+            <TextView android:id="@+id/item3"
+                android:text="Device Address"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="100dip"
+                android:textStyle="bold"
+                android:layout_alignParentEnd="true"
+                />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView android:id="@+id/devName"
+                android:text="col_1"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="100dip"
+
+                />
+
+            <TextView android:id="@+id/devAddress"
+                android:text="col_3"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="100dip"
+                android:layout_alignParentEnd="true"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

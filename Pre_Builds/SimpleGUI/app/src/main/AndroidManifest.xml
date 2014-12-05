@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.three1one.gui_v2" >
-
-    <!-- To access Google+ APIs: -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    package="org.three1one.simplegui" >
 
     <application
         android:allowBackup="true"
@@ -11,13 +8,17 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="org.three1one.gui_v2.MainActivity"
+            android:name="org.three1one.simplegui.ListDevices"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="org.three1one.simplegui.LightController"
+            android:label="@string/title_activity_light_controller" >
         </activity>
     </application>
 
