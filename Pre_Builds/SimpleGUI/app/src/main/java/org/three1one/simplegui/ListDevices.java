@@ -1,14 +1,20 @@
 package org.three1one.simplegui;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -27,17 +33,58 @@ import java.util.Map;
 
 
 public class ListDevices extends Activity {
+    private BluetoothAdapter mBluetoothAdapter;
+    public static List<BluetoothDevice> mDevices = new ArrayList<BluetoothDevice>();
+    private String DEVICE_NAME = "devName";
+    private String DEVICE_ADDRESS = "devAddress";
+    public final static String EXTRA_DEVICE_ADDRESS = "EXTRA_DEVICE_ADDRESS";
+    public final static String EXTRA_DEVICE_NAME = "EXTRA_DEVICE_NAME";
+
+    private static final int REQUEST_ENABLE_BT = 1;
+    private static final long SCAN_PERIOD = 3000;
+
+    private Button btnFindDevices;
+    private List<HashMap<String, String>> fillMaps = new ArrayList<HashMap<String, String>>();
+    private ListView listDevices;
+
+    // create the grid item mapping
+    private String[] from = new String[] {"devName", "devAddress"};
+    private int[] to = new int[] { R.id.devName, R.id.devAddress};
+    // prepare the list of all records
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_devices);
 
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, "Ble not supported", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        final BluetoothManager mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Ble not supported", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+
+
+
+    }
+
+    public void findDevices(){
+        fillMaps.clear();
+        mDevices.clear();
 
         String filename = "savedDevices";
-        String string = "phone1,0124953;phone2,34564;phone3,349663;";
-
-
+        String string = "";
         FileOutputStream outputStream = null;
         try {
             outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
@@ -67,45 +114,97 @@ public class ListDevices extends Activity {
             e.printStackTrace();
         }
 
-        ListView listDevices = (ListView) findViewById(R.id.listView);
-        // create the grid item mapping
-        String[] from = new String[] {"devName", "devAddress"};
-        int[] to = new int[] { R.id.devName, R.id.devAddress};
-        // prepare the list of all records
-        List<HashMap<String, String>> fillMaps = new ArrayList<HashMap<String, String>>();
+        listDevices = (ListView) findViewById(R.id.listView);
 
-        String[] devices = readLine.split(";");
-        for( String n : devices) {
-            String[] deviceDetails = n.split(",");
 
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put("devName",deviceDetails[0]);
-            map.put("devAddress",deviceDetails[1]);
-            fillMaps.add(map);
+        try {
+            String[] devices = readLine.split(";");
+            for (String n : devices) {
+                String[] deviceDetails = n.split(",");
+
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("devName", deviceDetails[0]);
+                map.put("devAddress", deviceDetails[1]);
+                fillMaps.add(map);
+            }
+        }
+        catch(ArrayIndexOutOfBoundsException e){
+            Toast.makeText(getApplicationContext(), "no saved devices found", Toast.LENGTH_SHORT).show();
         }
 
-        for(int a=0;a<5;a++){
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put("devName","new Device: " + a);
-            map.put("devAddress","dev ID: " + a);
-            fillMaps.add(map);
-        }
 
-        SimpleAdapter mAdapter = new SimpleAdapter(getApplicationContext(), fillMaps, R.layout.grid_item, from, to);
-        listDevices.setAdapter(mAdapter);
+        scanLeDevice();
 
         listDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(getApplicationContext(), "click", Toast.LENGTH_SHORT).show();
-                Intent newActivity = new Intent(ListDevices.this, LightController.class);
-                startActivity(newActivity);
+                //Intent newActivity = new Intent(ListDevices.this, LightController.class);
+                //startActivity(newActivity);
+
+                HashMap<String, String> hashMap = (HashMap<String, String>) fillMaps.get(position);
+                String addr = hashMap.get(DEVICE_ADDRESS);
+                String name = hashMap.get(DEVICE_NAME);
+
+                Intent intent = new Intent(ListDevices.this, LightController.class);
+                intent.putExtra(EXTRA_DEVICE_ADDRESS, addr);
+                intent.putExtra(EXTRA_DEVICE_NAME, name);
+                startActivity(intent);
+                //ListDevices.instance.finish();
+
+                finish();
             }
         });
     }
 
+    private void scanLeDevice() {
+        new Thread() {
+
+            @Override
+            public void run() {
+                mBluetoothAdapter.startLeScan(mLeScanCallback);
+
+                try {
+                    Thread.sleep(SCAN_PERIOD);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SimpleAdapter mAdapter = new SimpleAdapter(getApplicationContext(), fillMaps, R.layout.grid_item, from, to);
+                        listDevices.setAdapter(mAdapter);
+                    }
+                });
+
+
+            }
+        }.start();
+    }
+
+    private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+
+        @Override
+        public void onLeScan(final BluetoothDevice device, final int rssi,
+                             byte[] scanRecord) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (device != null) {
+                        if (!mDevices.contains(device)) {
+                            mDevices.add(device);
+                            HashMap<String, String> map = new HashMap<String, String>();
+                            map.put("devName", device.getName());
+                            map.put("devAddress", device.getAddress());
+                            fillMaps.add(map);
+                        }
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,8 +221,8 @@ public class ListDevices extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.btnFindDevices) {
+            findDevices();
         }
 
         return super.onOptionsItemSelected(item);

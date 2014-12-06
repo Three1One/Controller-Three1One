@@ -160,6 +160,7 @@ public class Main extends Activity {
         }
     };
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // User chose not to enable Bluetooth.
