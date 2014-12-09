@@ -93,7 +93,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("b");
+                characteristic.setValue("k");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -102,7 +102,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("B");
+                characteristic.setValue("v");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -111,7 +111,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("a");
+                characteristic.setValue("m");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -120,7 +120,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("A");
+                characteristic.setValue("t");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -129,7 +129,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("A");
+                characteristic.setValue("r");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -138,7 +138,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("A");
+                characteristic.setValue("a");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
