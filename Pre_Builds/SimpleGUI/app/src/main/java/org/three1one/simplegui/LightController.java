@@ -16,7 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +75,7 @@ public class LightController extends Activity {
     private Button btnColourPickCyan;
     private Button btnColourPickYellow;
     private Button btnColourPickMagenta;
+    private Button btn_Start;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,12 +91,13 @@ public class LightController extends Activity {
         btnColourPickCyan = (Button) findViewById(R.id.btnCyan) ;
         btnColourPickYellow = (Button) findViewById(R.id.btnYellow) ;
         btnColourPickMagenta = (Button) findViewById(R.id.btnMagenta) ;
+        btn_Start = (Button) findViewById(R.id.btn_Start) ;
 
         btnColourPickRed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("k");
+                characteristic.setValue("k,1000;?");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -102,7 +106,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("v");
+                characteristic.setValue("v,1000;?");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -111,7 +115,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("m");
+                characteristic.setValue("m,1000;?");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -120,7 +124,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("t");
+                characteristic.setValue("t,1000;?");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -129,7 +133,7 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("r");
+                characteristic.setValue("r,1000;?");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
@@ -138,10 +142,30 @@ public class LightController extends Activity {
             @Override
             public void onClick(View view) {
                 BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("a");
+                characteristic.setValue("a,1000;?");
                 mBluetoothLeService.writeCharacteristic(characteristic);
             }
         });
+
+        btn_Start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*
+                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                characteristic.setValue("a,1000;r,4000;t,2000;?");
+                mBluetoothLeService.writeCharacteristic(characteristic);
+                */
+
+                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                characteristic.setValue("a,1000;r,4000;?");
+                mBluetoothLeService.writeCharacteristic(characteristic);
+
+
+
+
+            }
+        });
+
 
         Intent intent = getIntent();
 
@@ -152,6 +176,11 @@ public class LightController extends Activity {
 
         Intent gattServiceIntent = new Intent(this, RBLService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        Spinner dropdown = (Spinner)findViewById(R.id.lst_DropdownTime);
+        String[] items = new String[]{"1", "2", "three"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
+        dropdown.setAdapter(adapter);
 
     }
 
