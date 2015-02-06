@@ -36,6 +36,8 @@ public class RBLService extends Service {
     public final static UUID UUID_BLE_SHIELD_RX = UUID.fromString(RBLAttributes.BLE_SHIELD_RX);
     public final static UUID UUID_BLE_SHIELD_SERVICE = UUID.fromString(RBLAttributes.BLE_SHIELD_SERVICE);
 
+    public String curSendData;
+
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -82,6 +84,12 @@ public class RBLService extends Service {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+        }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Log.w(TAG, "Written ");
+            sendingContinuePacket(characteristic);
         }
     };
 
@@ -262,14 +270,42 @@ public class RBLService extends Service {
         mBluetoothGatt.readRemoteRssi();
     }
 
-    public void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
+    public void writeCharacteristic(BluetoothGattCharacteristic characteristic, String CHARACTERS) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
+        //characteristic.setValue(CHARACTERS);
+        //mBluetoothGatt.writeCharacteristic(characteristic);
 
-        mBluetoothGatt.writeCharacteristic(characteristic);
+        byte[] initial_packet = new byte[3];
+        /**
+         * Indicate byte
+         */
+        initial_packet[0] = RBLAttributes.INITIAL_MESSAGE_PACKET;
+        if (Long.valueOf(String.valueOf(CHARACTERS.length() + initial_packet.length)) > RBLAttributes.DEFAULT_BYTES_VIA_BLE) {
+            curSendData=curSendData+CHARACTERS;
+            sendingContinuePacket(characteristic);
+
+        } else {
+            characteristic.setValue(CHARACTERS);
+            mBluetoothGatt.writeCharacteristic(characteristic);
+        }
+
     }
+
+    private void sendingContinuePacket(BluetoothGattCharacteristic characteristic){
+        if(curSendData!="") {
+            String curData = "";
+            for (int a = 0; a < 20 || a < curSendData.length(); a++) {
+                curData += curSendData.charAt(0);
+                curSendData = curSendData.substring(1, curSendData.length());
+            }
+            characteristic.setValue(curData);
+            mBluetoothGatt.writeCharacteristic(characteristic);
+        }
+    }
+
 
     /**
      * Enables or disables notification on a give characteristic.

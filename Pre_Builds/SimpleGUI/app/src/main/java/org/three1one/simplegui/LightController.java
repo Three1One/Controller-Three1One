@@ -29,6 +29,7 @@ import java.util.UUID;
 
 public class LightController extends Activity {
     private final static String TAG = LightController.class.getSimpleName();
+    private Boolean recordModeState = false;
     private String mDeviceName;
     private String mDeviceAddress;
     private RBLService mBluetoothLeService;
@@ -76,6 +77,13 @@ public class LightController extends Activity {
     private Button btnColourPickYellow;
     private Button btnColourPickMagenta;
     private Button btn_Start;
+    private Button btn_Rec;
+    private Button btn_Save;
+    private Button btn_Stop;
+    private Button btn_Delete;
+    private Spinner dropdown;
+
+    private String curCustomCmd = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,76 +100,155 @@ public class LightController extends Activity {
         btnColourPickYellow = (Button) findViewById(R.id.btnYellow) ;
         btnColourPickMagenta = (Button) findViewById(R.id.btnMagenta) ;
         btn_Start = (Button) findViewById(R.id.btn_Start) ;
+        btn_Rec = (Button) findViewById(R.id.btn_Rec) ;
+        btn_Save = (Button) findViewById(R.id.btn_Save) ;
+        btn_Stop = (Button) findViewById(R.id.btn_Stop) ;
+        btn_Delete = (Button) findViewById(R.id.btn_Del) ;
 
         btnColourPickRed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("k,1000;?");
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                 if(recordModeState){
+                     dropdown.setEnabled(true);
+                 }
+                 else
+                 {
+                     BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                     mBluetoothLeService.writeCharacteristic(characteristic,"k,0000;?");
+                 }
+
+
             }
         });
 
         btnColourPickGreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("v,1000;?");
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                  if(recordModeState){
+                      dropdown.setEnabled(true);
+                  }
+                  else
+                  {
+                       BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                       mBluetoothLeService.writeCharacteristic(characteristic,"v,0000;?");
+
+                  }
+
+
             }
         });
 
         btnColourPickBlue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("m,1000;?");
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                 if(recordModeState){
+                     dropdown.setEnabled(true);
+                 }
+                 else
+                 {
+                      BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                      mBluetoothLeService.writeCharacteristic(characteristic,"m,0000;?");
+
+                 }
+
+
             }
         });
 
         btnColourPickCyan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("t,1000;?");
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                 if(recordModeState){
+                     dropdown.setEnabled(true);
+                 }
+                 else
+                 {
+
+                       BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                       mBluetoothLeService.writeCharacteristic(characteristic,"t,0000;?");
+                 }
+
+
             }
         });
 
         btnColourPickYellow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("r,1000;?");
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                if(recordModeState){
+                    dropdown.setEnabled(true);
+                }
+                else
+                {
+                      BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                      mBluetoothLeService.writeCharacteristic(characteristic,"r,0000;?");
+
+                }
+
+
             }
         });
 
         btnColourPickMagenta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("a,1000;?");
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                if(recordModeState){
+                    dropdown.setEnabled(true);
+                }
+                else
+                {
+                   BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                   mBluetoothLeService.writeCharacteristic(characteristic,"a,0000;?");
+
+                }
+
+
             }
         });
 
         btn_Start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*
-                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("a,1000;r,4000;t,2000;?");
-                mBluetoothLeService.writeCharacteristic(characteristic);
-                */
+                if(recordModeState){
+                    dropdown.setEnabled(true);
 
-                BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                characteristic.setValue("a,1000;r,4000;?");
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                }
+                else
+                {
+                     BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
+                     mBluetoothLeService.writeCharacteristic(characteristic,"m,0100;v,0100;k,0100;?");
+
+                }
 
 
 
+            }
+        });
+
+        btn_Rec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordMode(true);
+            }
+        });
+
+        btn_Save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                 recordMode(false);
+            }
+        });
+
+        btn_Stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        btn_Delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
             }
         });
@@ -177,13 +264,35 @@ public class LightController extends Activity {
         Intent gattServiceIntent = new Intent(this, RBLService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
-        Spinner dropdown = (Spinner)findViewById(R.id.lst_DropdownTime);
+        dropdown = (Spinner)findViewById(R.id.lst_DropdownTime);
         String[] items = new String[]{"1", "2", "three"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
         dropdown.setAdapter(adapter);
 
+
     }
 
+    private void recordMode(Boolean setOn){
+        recordModeState = setOn;
+        if(setOn){
+            btn_Delete.setEnabled(false);
+            btn_Start.setEnabled(false);
+            btn_Rec.setEnabled(false);
+            btn_Save.setEnabled(true);
+            btn_Stop.setEnabled(false);
+            btn_Delete.setEnabled(false);
+            dropdown.setEnabled(false);
+        }
+        else
+        {
+            btn_Delete.setEnabled(false);
+            btn_Start.setEnabled(false);
+            btn_Rec.setEnabled(true);
+            btn_Save.setEnabled(false);
+            btn_Stop.setEnabled(false);
+            btn_Delete.setEnabled(false);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

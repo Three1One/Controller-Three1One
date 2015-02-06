@@ -12,7 +12,8 @@ public class RBLAttributes {
     public static String BLE_SHIELD_TX = "713d0003-503e-4c75-ba94-3148f18d941e";
     public static String BLE_SHIELD_RX = "713d0002-503e-4c75-ba94-3148f18d941e";
     public static String BLE_SHIELD_SERVICE = "713d0000-503e-4c75-ba94-3148f18d941e";
-
+    public static int DEFAULT_BYTES_VIA_BLE = 20;
+    public static byte INITIAL_MESSAGE_PACKET = 0x03;
     static {
         // RBL Services.
         attributes.put("713d0000-503e-4c75-ba94-3148f18d941e",
