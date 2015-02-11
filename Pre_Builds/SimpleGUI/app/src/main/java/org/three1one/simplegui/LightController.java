@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -110,6 +111,7 @@ public class LightController extends Activity {
             public void onClick(View view) {
                  if(recordModeState){
                      dropdown.setEnabled(true);
+                     disabledLightBtns(false);
                  }
                  else
                  {
@@ -126,6 +128,7 @@ public class LightController extends Activity {
             public void onClick(View view) {
                   if(recordModeState){
                       dropdown.setEnabled(true);
+                      disabledLightBtns(false);
                   }
                   else
                   {
@@ -160,6 +163,7 @@ public class LightController extends Activity {
             public void onClick(View view) {
                  if(recordModeState){
                      dropdown.setEnabled(true);
+                     disabledLightBtns(false);
                  }
                  else
                  {
@@ -177,6 +181,7 @@ public class LightController extends Activity {
             public void onClick(View view) {
                 if(recordModeState){
                     dropdown.setEnabled(true);
+                    disabledLightBtns(false);
                 }
                 else
                 {
@@ -194,6 +199,7 @@ public class LightController extends Activity {
             public void onClick(View view) {
                 if(recordModeState){
                     dropdown.setEnabled(true);
+                    disabledLightBtns(false);
                 }
                 else
                 {
@@ -211,7 +217,7 @@ public class LightController extends Activity {
             public void onClick(View view) {
                 if(recordModeState){
                     dropdown.setEnabled(true);
-
+                    disabledLightBtns(false);
                 }
                 else
                 {
@@ -268,10 +274,30 @@ public class LightController extends Activity {
         String[] items = new String[]{"1", "2", "three"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
         dropdown.setAdapter(adapter);
+        dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+               @Override
+               public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
+                   disabledLightBtns(true);
+               }
+
+               @Override
+               public void onNothingSelected(AdapterView<?> parent) {
+
+               }
+           }
+        );
 
     }
 
+    private void disabledLightBtns(Boolean setOn){
+        btnColourPickRed.setEnabled(setOn);
+        btnColourPickGreen.setEnabled(setOn);
+        btnColourPickBlue.setEnabled(setOn);
+        btnColourPickCyan.setEnabled(setOn);
+        btnColourPickYellow.setEnabled(setOn);
+        btnColourPickMagenta.setEnabled(setOn);
+    }
     private void recordMode(Boolean setOn){
         recordModeState = setOn;
         if(setOn){
