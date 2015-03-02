@@ -2,4 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".ListDevices">
     <item android:id="@+id/btnFindDevices" android:title="@string/FindDevices"
         android:orderInCategory="100" android:showAsAction="never" />
+    <item android:id="@+id/btnClearDevices" android:title="@string/ClearDevices"
+        android:orderInCategory="100" android:showAsAction="never" />
 </menu>

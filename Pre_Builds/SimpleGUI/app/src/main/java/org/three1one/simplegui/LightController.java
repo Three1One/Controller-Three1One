@@ -222,7 +222,7 @@ public class LightController extends Activity {
                 else
                 {
                      BluetoothGattCharacteristic characteristic = map.get(RBLService.UUID_BLE_SHIELD_TX);
-                     mBluetoothLeService.writeCharacteristic(characteristic,"m,0100;v,0100;k,0100;?");
+                     mBluetoothLeService.writeCharacteristic(characteristic,"m,1000;v,1000;k,1000;?");
 
                 }
 

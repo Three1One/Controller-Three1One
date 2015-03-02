@@ -17,6 +17,7 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Binder;
 import android.util.Log;
+import android.widget.Toast;
 
 public class RBLService extends Service {
     private final static String TAG = RBLService.class.getSimpleName();
@@ -88,8 +89,9 @@ public class RBLService extends Service {
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            Log.w(TAG, "Written ");
-            sendingContinuePacket(characteristic);
+            //Log.w(TAG, "Written ");
+            //sendingContinuePacket(characteristic);
+
         }
     };
 
@@ -285,8 +287,7 @@ public class RBLService extends Service {
         initial_packet[0] = RBLAttributes.INITIAL_MESSAGE_PACKET;
         if (Long.valueOf(String.valueOf(CHARACTERS.length() + initial_packet.length)) > RBLAttributes.DEFAULT_BYTES_VIA_BLE) {
             curSendData=curSendData+CHARACTERS;
-            sendingContinuePacket(characteristic);
-
+            sendingContinuePacket(characteristic,CHARACTERS);
         } else {
             characteristic.setValue(CHARACTERS);
             mBluetoothGatt.writeCharacteristic(characteristic);
@@ -294,15 +295,26 @@ public class RBLService extends Service {
 
     }
 
-    private void sendingContinuePacket(BluetoothGattCharacteristic characteristic){
+    private void sendingContinuePacket(BluetoothGattCharacteristic characteristic, String CHARACTERS){
         if(curSendData!="") {
             String curData = "";
-            for (int a = 0; a < 20 || a < curSendData.length(); a++) {
-                curData += curSendData.charAt(0);
-                curSendData = curSendData.substring(1, curSendData.length());
+            for (int a = 0; a < CHARACTERS.length()+1; a++) {
+                if(curData.length()==20 || a == CHARACTERS.length()){
+                    characteristic.setValue(curData);
+                    mBluetoothGatt.writeCharacteristic(characteristic);
+
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    curData="";
+                }
+                else {
+                    curData += CHARACTERS.charAt(a);
+                }
             }
-            characteristic.setValue(curData);
-            mBluetoothGatt.writeCharacteristic(characteristic);
+
         }
     }
 

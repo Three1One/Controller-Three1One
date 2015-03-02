@@ -43,7 +43,7 @@ public class ListDevices extends Activity {
     private static final int REQUEST_ENABLE_BT = 1;
     private static final long SCAN_PERIOD = 3000;
 
-    private Button btnFindDevices;
+
     private List<HashMap<String, String>> fillMaps = new ArrayList<HashMap<String, String>>();
     private ListView listDevices;
 
@@ -76,30 +76,10 @@ public class ListDevices extends Activity {
         }
 
 
-
-    }
-
-    public void findDevices(){
-        fillMaps.clear();
-        mDevices.clear();
-
-        String filename = "savedDevices";
-        String string = "";
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(string.getBytes());
-            outputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         String readLine ="";
         FileInputStream inputStream = null;
         try {
-            inputStream = openFileInput(filename);
+            inputStream = openFileInput("savedDevices");
             int i;
             char c;
             while((i = inputStream.read()) != -1)
@@ -126,36 +106,47 @@ public class ListDevices extends Activity {
                 map.put("devName", deviceDetails[0]);
                 map.put("devAddress", deviceDetails[1]);
                 fillMaps.add(map);
+
+
             }
+            refreshList();
         }
         catch(ArrayIndexOutOfBoundsException e){
             Toast.makeText(getApplicationContext(), "no saved devices found", Toast.LENGTH_SHORT).show();
         }
 
+    }
 
-        scanLeDevice();
+    public void refreshList(){
+        SimpleAdapter mAdapter = new SimpleAdapter(getApplicationContext(), fillMaps, R.layout.grid_item, from, to);
+        listDevices.setAdapter(mAdapter);
 
         listDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Intent newActivity = new Intent(ListDevices.this, LightController.class);
-                //startActivity(newActivity);
 
-                HashMap<String, String> hashMap = (HashMap<String, String>) fillMaps.get(position);
-                String addr = hashMap.get(DEVICE_ADDRESS);
-                String name = hashMap.get(DEVICE_NAME);
+            HashMap<String, String> hashMap = (HashMap<String, String>) fillMaps.get(position);
+            String addr = hashMap.get(DEVICE_ADDRESS);
+            String name = hashMap.get(DEVICE_NAME);
 
-                Intent intent = new Intent(ListDevices.this, LightController.class);
-                intent.putExtra(EXTRA_DEVICE_ADDRESS, addr);
-                intent.putExtra(EXTRA_DEVICE_NAME, name);
-                startActivity(intent);
-                //ListDevices.instance.finish();
+            Intent intent = new Intent(ListDevices.this, LightController.class);
+            intent.putExtra(EXTRA_DEVICE_ADDRESS, addr);
+            intent.putExtra(EXTRA_DEVICE_NAME, name);
+            startActivity(intent);
 
-                finish();
+            finish();
             }
         });
+    }
+
+    public void findDevices(){
+        fillMaps.clear();
+        mDevices.clear();
+
+        scanLeDevice();
+
     }
 
     private void scanLeDevice() {
@@ -174,8 +165,8 @@ public class ListDevices extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        SimpleAdapter mAdapter = new SimpleAdapter(getApplicationContext(), fillMaps, R.layout.grid_item, from, to);
-                        listDevices.setAdapter(mAdapter);
+                        refreshList();
+                        saveDeviceList();
                     }
                 });
 
@@ -206,6 +197,47 @@ public class ListDevices extends Activity {
         }
     };
 
+    public void clearDeviceList(){
+        fillMaps.clear();
+        mDevices.clear();
+
+        String string = "";
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = openFileOutput("savedDevices", Context.MODE_PRIVATE);
+            outputStream.write(string.getBytes());
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        refreshList();
+    }
+
+    public void saveDeviceList(){
+        String string = "";
+
+
+        for (BluetoothDevice item : mDevices) {
+            string=string+item.getName()+","+item.getAddress()+";";
+            Toast.makeText(getApplicationContext(), item.getName(), Toast.LENGTH_SHORT).show();
+        }
+
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = openFileOutput("savedDevices", Context.MODE_PRIVATE);
+            outputStream.write(string.getBytes());
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -223,6 +255,9 @@ public class ListDevices extends Activity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.btnFindDevices) {
             findDevices();
+        }
+        if (id == R.id.btnClearDevices){
+            clearDeviceList();
         }
 
         return super.onOptionsItemSelected(item);
